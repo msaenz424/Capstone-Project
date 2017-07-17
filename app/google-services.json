@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "738371170628",
+    "firebase_url": "https://geodairy-7b9c6.firebaseio.com",
+    "project_id": "geodairy-7b9c6",
+    "storage_bucket": "geodairy-7b9c6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:738371170628:android:c87e83ff691a11ab",
+        "android_client_info": {
+          "package_name": "com.android.mig.geodairy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "738371170628-87pqd11tfuko9vvbs2q95dacdd5nc988.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.android.mig.geodairy",
+            "certificate_hash": "e504167edd520b2d64ebce3040e94403da1b8fb3"
+          }
+        },
+        {
+          "client_id": "738371170628-msoa67l5plavq8rkcprcl5opjcjk3hlr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBm2YwdqKOgzWSNwuWbyDTg4S87Hpojqvg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "738371170628-msoa67l5plavq8rkcprcl5opjcjk3hlr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
