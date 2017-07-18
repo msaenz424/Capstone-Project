@@ -6,6 +6,7 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 
 import com.firebase.ui.auth.AuthUI;
@@ -76,6 +77,12 @@ public class GalleryActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.gallery_menu, menu);
+        return true;
     }
 
     private void showSnackbar(@StringRes int errorMessageRes) {

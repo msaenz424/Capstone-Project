@@ -4,4 +4,6 @@
     <string name="sign_in_cancelled">Cancelled</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="unknown_error">Unknown error occurred, try again</string>
+    <string name="action_geodairy_map">Map</string>
+    <string name="action_sign_out">Sign out</string>
 </resources>
