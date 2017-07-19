@@ -6,4 +6,7 @@
     <string name="unknown_error">Unknown error occurred, try again</string>
     <string name="action_geodairy_map">Map</string>
     <string name="action_sign_out">Sign out</string>
+    
+    <!-- Firebase strings -->
+    <string name="geodairy_node">geodairies</string>
 </resources>
