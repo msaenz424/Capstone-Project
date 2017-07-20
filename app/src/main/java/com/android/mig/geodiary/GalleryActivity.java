@@ -1,4 +1,4 @@
-package com.android.mig.geodairy;
+package com.android.mig.geodiary;
 
 import android.content.Intent;
 import android.support.annotation.StringRes;
@@ -13,7 +13,7 @@ import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.View;
 
-import com.android.mig.geodairy.adapters.GeodairyViewHolder;
+import com.android.mig.geodiary.adapters.GeoDiaryViewHolder;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
@@ -66,33 +66,33 @@ public class GalleryActivity extends AppCompatActivity {
                     RC_SIGN_IN);
         }
 
-        mDatabaseReference = mFirebaseDatabase.getReference().child("geodairies");
+        mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries");
 
         // insert data for test purposes
-        //GeoDairy geo = new GeoDairy("title", "content", "url goes here", -34, 15.11);
+        //GeoDiary geo = new GeoDiary("title", "content", "your url goes here", -34, 15.11);
         //mDatabaseReference.push().setValue(geo);
 
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<GeoDairy, GeodairyViewHolder>(
-                GeoDairy.class,
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<GeoDiary, GeoDiaryViewHolder>(
+                GeoDiary.class,
                 R.layout.item_gallery,
-                GeodairyViewHolder.class,
+                GeoDiaryViewHolder.class,
                 mDatabaseReference) {
             @Override
-            protected void populateViewHolder(GeodairyViewHolder viewHolder, GeoDairy geoDairy, int position) {
-                viewHolder.setPhoto(geoDairy.getPhotoUrl());
+            protected void populateViewHolder(GeoDiaryViewHolder viewHolder, GeoDiary GeoDiary, int position) {
+                viewHolder.setPhoto(GeoDiary.getPhotoUrl());
                 // formats long timestamp to readable date string
-                long date = geoDairy.getDate()*1000L;
+                long date = GeoDiary.getDate()*1000L;
                 String dateString = DateUtils.formatDateTime(getApplicationContext(), date, DateUtils.FORMAT_SHOW_YEAR);
                 viewHolder.setDate(dateString);
             }
         };
         mGalleryRecyclerView.setAdapter(mFirebaseAdapter);
 
-        // opens activity to add a new geodairy
+        // opens activity to add a new GeoDiary
         mFabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(GalleryActivity.this, AddGeodairyActivity.class);
+                Intent intent = new Intent(GalleryActivity.this, AddGeoDiaryActivity.class);
                 startActivity(intent);
             }
         });

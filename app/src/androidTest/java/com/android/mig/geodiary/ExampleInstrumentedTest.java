@@ -1,4 +1,4 @@
-package com.android.mig.geodairy;
+package com.android.mig.geodiary;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.android.mig.geodairy", appContext.getPackageName());
+        assertEquals("com.android.mig.geodiary", appContext.getPackageName());
     }
 }

@@ -1,19 +1,19 @@
-package com.android.mig.geodairy.adapters;
+package com.android.mig.geodiary.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.mig.geodairy.R;
+import com.android.mig.geodiary.R;
 import com.bumptech.glide.Glide;
 
 
-public class GeodairyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class GeoDiaryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     private final ImageView mPhoto;
     private final TextView mDate;
 
-    public GeodairyViewHolder(View itemView) {
+    public GeoDiaryViewHolder(View itemView) {
         super(itemView);
         mPhoto = (ImageView) itemView.findViewById(R.id.photo_image_view);
         mDate = (TextView) itemView.findViewById(R.id.date_text_view);

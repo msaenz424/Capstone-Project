@@ -1,4 +1,4 @@
-package com.android.mig.geodairy;
+package com.android.mig.geodiary;
 
 import org.junit.Test;
 

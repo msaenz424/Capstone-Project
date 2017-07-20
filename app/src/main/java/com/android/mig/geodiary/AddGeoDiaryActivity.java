@@ -1,4 +1,4 @@
-package com.android.mig.geodairy;
+package com.android.mig.geodiary;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,7 +11,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
-public class AddGeodairyActivity extends AppCompatActivity {
+public class AddGeoDiaryActivity extends AppCompatActivity {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
@@ -24,7 +24,7 @@ public class AddGeodairyActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_geodairy);
+        setContentView(R.layout.activity_add_geodiary);
 
         mThumbnailImageView = (ImageView) findViewById(R.id.thumbnail_image_view);
         mFabPlus = (FloatingActionButton) findViewById(R.id.fab_plus);
@@ -42,7 +42,7 @@ public class AddGeodairyActivity extends AppCompatActivity {
                 // fab buttons are visible
                 if (isOpen){
                     disableButtons();
-                // fab buttons are not visible
+                    // fab buttons are not visible
                 } else {
                     enableButtons();
                 }

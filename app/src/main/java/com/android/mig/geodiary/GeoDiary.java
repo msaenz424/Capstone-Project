@@ -1,6 +1,6 @@
-package com.android.mig.geodairy;
+package com.android.mig.geodiary;
 
-public class GeoDairy {
+public class GeoDiary {
     private final static int ONE_SECOND_IN_MILLISECONDS = 1000;
 
     private String mTitle;
@@ -10,10 +10,10 @@ public class GeoDairy {
     private double mLongitude;
     private double mLatitude;
 
-    public GeoDairy() {
+    public GeoDiary() {
     }
 
-    public GeoDairy(String mTitle, String mContent, String mPhotoUrl, double mLongitude, double mLatitude) {
+    public GeoDiary(String mTitle, String mContent, String mPhotoUrl, double mLongitude, double mLatitude) {
         this.mTitle = mTitle;
         this.mContent = mContent;
         this.mPhotoUrl = mPhotoUrl;
