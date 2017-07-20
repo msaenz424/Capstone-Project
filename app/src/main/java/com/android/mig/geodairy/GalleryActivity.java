@@ -3,6 +3,7 @@ package com.android.mig.geodairy;
 import android.content.Intent;
 import android.support.annotation.StringRes;
 
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ public class GalleryActivity extends AppCompatActivity {
 
     private View mRootView;
     private RecyclerView mGalleryRecyclerView;
+    private FloatingActionButton mFabAdd;
 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseDatabase mFirebaseDatabase;
@@ -42,6 +44,7 @@ public class GalleryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_gallery);
 
         mRootView =  findViewById(R.id.login_root);
+        mFabAdd = (FloatingActionButton) findViewById(R.id.fab_add);
         mGalleryRecyclerView = (RecyclerView) findViewById(R.id.gallery_recycler_view);
         mGalleryRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         mGalleryRecyclerView.hasFixedSize();
@@ -84,6 +87,15 @@ public class GalleryActivity extends AppCompatActivity {
             }
         };
         mGalleryRecyclerView.setAdapter(mFirebaseAdapter);
+
+        // opens activity to add a new geodairy
+        mFabAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(GalleryActivity.this, AddGeodairyActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
