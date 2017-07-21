@@ -6,10 +6,37 @@
     android:layout_height="match_parent"
     tools:context="com.android.mig.geodiary.AddGeoDiaryActivity">
 
-    <EditText
-        android:id="@+id/content_edit_text"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="400dp" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/title_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:inputType="text"
+            android:maxLines="1" />
+
+        <EditText
+            android:id="@+id/body_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="top|start"
+            android:inputType="textMultiLine"
+            android:scrollbars="vertical"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/thumbnail_image_view"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="top|end"
+        android:padding="16dp"
+        android:rotation="20"
+        android:alpha="0.5"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_submit"
@@ -19,8 +46,7 @@
         android:layout_marginBottom="84dp"
         android:layout_marginEnd="24dp"
         android:visibility="invisible"
-        app:fabSize="mini"
-        app:srcCompat="@drawable/ic_action_submit" />
+        app:fabSize="mini" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_take_photo"
@@ -44,11 +70,5 @@
         android:elevation="6dp"
         android:translationZ="6dp"
         app:srcCompat="@drawable/ic_action_plus" />
-
-    <ImageView
-        android:id="@+id/thumbnail_image_view"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="bottom|start"/>
 
 </android.support.design.widget.CoordinatorLayout>

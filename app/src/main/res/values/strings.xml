@@ -9,4 +9,5 @@
 
     <!-- Firebase strings -->
     <string name="geodiary_node">geodiaries</string>
+    <string name="action_submit">Submit</string>
 </resources>
