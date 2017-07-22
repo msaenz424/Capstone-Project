@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -60,7 +61,6 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
     private DatabaseReference mDatabaseReference;
     private FirebaseStorage mFirebaseStorage;
     private StorageReference mStorageReference;
-    private FusedLocationProviderClient mFusedLocationClient;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
 
@@ -299,5 +299,8 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
                 mDatabaseReference.push().setValue(geo);
             }
         });
+        Snackbar mySnackbar = Snackbar.make(findViewById(R.id.add_geodiary_coordinator_layout),
+                R.string.geodiary_saved_message, Snackbar.LENGTH_SHORT);
+        mySnackbar.show();
     }
 }
