@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +23,12 @@ import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -30,10 +38,14 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 
-public class AddGeoDiaryActivity extends AppCompatActivity {
+public class AddGeoDiaryActivity extends AppCompatActivity implements
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final int MY_PERMISSIONS_REQUEST_USE_CAMERA = 10;     // code should be bigger than 0
+    private static final int MY_PERMISSIONS_REQUEST_USE_CAMERA = 10;        // code should be bigger than 0
+    private static final int MY_PERMISSIONS_REQUEST_COARSE_LOCATION = 20;
 
     EditText mTitleEditText, mBodyEditText;
     ImageView mThumbnailImageView;
@@ -42,11 +54,15 @@ public class AddGeoDiaryActivity extends AppCompatActivity {
             mFabClockwiseAnimation, mFabCounterClockwiseAnimation;
     Uri mPhotoPath;
     boolean isOpen = false;
+    double mLatitude, mLongitude;
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
     private FirebaseStorage mFirebaseStorage;
     private StorageReference mStorageReference;
+    private FusedLocationProviderClient mFusedLocationClient;
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +85,7 @@ public class AddGeoDiaryActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // fab buttons are visible
-                if (isOpen){
+                if (isOpen) {
                     disableButtons();
                     // fab buttons are not visible
                 } else {
@@ -81,13 +97,34 @@ public class AddGeoDiaryActivity extends AppCompatActivity {
         mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries");
         mFirebaseStorage = FirebaseStorage.getInstance();
         mStorageReference = mFirebaseStorage.getReference().child("geodiary_photos");
+
+        // creates an instance of Google Service API
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mGoogleApiClient != null)
+            mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+        super.onStop();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // receives result code from camera intent launched previously
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            //mPhotoPath = mPhotoIntent = data;
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             mThumbnailImageView.setImageBitmap(imageBitmap);
@@ -104,7 +141,7 @@ public class AddGeoDiaryActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_submit){
+        if (item.getItemId() == R.id.action_submit) {
             uploadGeoDiary();
         }
         return super.onOptionsItemSelected(item);
@@ -121,13 +158,54 @@ public class AddGeoDiaryActivity extends AppCompatActivity {
                 }
                 return;
             }
+            case MY_PERMISSIONS_REQUEST_COARSE_LOCATION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // if permission is granted at run time, then re-connect to the service
+                    mGoogleApiClient.connect();
+                }
+            }
         }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        // checks if user granted permission for using location
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
+            // if permission is denied then request permission
+            if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+                mGoogleApiClient.disconnect();
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_COARSE_LOCATION);
+            }
+            return;
+        }
+
+        // once permission is granted, request location
+        mLocationRequest = LocationRequest.create();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mLongitude = location.getLongitude();
+        mLatitude = location.getLatitude();
     }
 
     /**
      * Shows fab buttons with animation and set their OnClick methods
      */
-    private void enableButtons(){
+    private void enableButtons() {
         mFabTakePhoto.startAnimation(mScaleUpAnimation);
         mFabTakePhoto.setClickable(true);
         mFabSubmit.startAnimation(mScaleUpAnimation);
@@ -152,7 +230,7 @@ public class AddGeoDiaryActivity extends AppCompatActivity {
     /**
      * Hides fab buttons with animation
      */
-    private void disableButtons(){
+    private void disableButtons() {
         mFabSubmit.startAnimation(mScaleDownAnimation);
         mFabTakePhoto.startAnimation(mScaleDownAnimation);
         mFabPlus.startAnimation(mFabCounterClockwiseAnimation);
@@ -162,13 +240,13 @@ public class AddGeoDiaryActivity extends AppCompatActivity {
     /**
      * checks for permission to use camera. Result is passed to onRequestPermissionsResult
      */
-    private void tryUsingCamera(){
+    private void tryUsingCamera() {
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permissionCheck == PackageManager.PERMISSION_DENIED){
+        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_REQUEST_USE_CAMERA);
-        } else if (permissionCheck == PackageManager.PERMISSION_GRANTED){
+        } else if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
             dispatchCameraIntent();
         }
     }
@@ -188,7 +266,7 @@ public class AddGeoDiaryActivity extends AppCompatActivity {
      *
      * @param context   activity context
      * @param image     photo that was taken
-     * @return          a Uri path to the image file
+     * @return a Uri path to the image file
      */
     public Uri getImageUri(Context context, Bitmap image) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -216,8 +294,8 @@ public class AddGeoDiaryActivity extends AppCompatActivity {
                         mTitleEditText.getText().toString(),
                         mBodyEditText.getText().toString(),
                         downloadUrl.toString(),
-                        -34,
-                        15.11);
+                        mLongitude,
+                        mLatitude);
                 mDatabaseReference.push().setValue(geo);
             }
         });
