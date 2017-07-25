@@ -4,12 +4,28 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/item_quote_text_view"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:textSize="16sp"/>
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/item_quote_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:padding="16dp"
+            android:textSize="16sp"/>
+
+        <ImageView
+            android:id="@+id/copy_image_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_action_copy_quote"/>
+
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
