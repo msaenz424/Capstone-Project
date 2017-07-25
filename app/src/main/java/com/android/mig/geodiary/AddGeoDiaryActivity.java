@@ -56,6 +56,7 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
     Uri mPhotoPath;
     boolean isOpen = false;
     double mLatitude, mLongitude;
+    String mUserID;
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
@@ -68,6 +69,8 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_geodiary);
+
+        mUserID = getIntent().getStringExtra(Intent.EXTRA_UID);
 
         mTitleEditText = (EditText) findViewById(R.id.title_edit_text);
         mBodyEditText = (EditText) findViewById(R.id.body_edit_text);
@@ -94,7 +97,7 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
             }
         });
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries");
+        mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID);
         mFirebaseStorage = FirebaseStorage.getInstance();
         mStorageReference = mFirebaseStorage.getReference().child("geodiary_photos");
 

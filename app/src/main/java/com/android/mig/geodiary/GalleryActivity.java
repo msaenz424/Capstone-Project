@@ -39,6 +39,8 @@ public class GalleryActivity extends AppCompatActivity {
     private DatabaseReference mDatabaseReference;
     private FirebaseRecyclerAdapter mFirebaseAdapter;
 
+    String mUserID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +56,7 @@ public class GalleryActivity extends AppCompatActivity {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         if (mFirebaseAuth.getCurrentUser() != null) {
             // already signed in
+            loadData();
         } else {
             // not signed in
             startActivityForResult(
@@ -67,33 +70,12 @@ public class GalleryActivity extends AppCompatActivity {
                     RC_SIGN_IN);
         }
 
-        mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries");
-
-        // insert data for test purposes
-        //GeoDiary geo = new GeoDiary("title", "content", "your url goes here", -34, 15.11);
-        //mDatabaseReference.push().setValue(geo);
-
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<GeoDiary, GeoDiaryViewHolder>(
-                GeoDiary.class,
-                R.layout.item_gallery,
-                GeoDiaryViewHolder.class,
-                mDatabaseReference) {
-            @Override
-            protected void populateViewHolder(GeoDiaryViewHolder viewHolder, GeoDiary GeoDiary, int position) {
-                viewHolder.setPhoto(GeoDiary.getPhotoUrl());
-                // formats long timestamp to readable date string
-                long date = GeoDiary.getDate()*1000L;
-                String dateString = DateUtils.formatDateTime(getApplicationContext(), date, DateUtils.FORMAT_SHOW_YEAR);
-                viewHolder.setDate(dateString);
-            }
-        };
-        mGalleryRecyclerView.setAdapter(mFirebaseAdapter);
-
         // opens activity to add a new GeoDiary
         mFabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(GalleryActivity.this, AddGeoDiaryActivity.class);
+                intent.putExtra(Intent.EXTRA_UID, mUserID);
                 startActivity(intent);
             }
         });
@@ -102,13 +84,13 @@ public class GalleryActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // RC_SIGN_IN is the request code you passed into startActivityForResult(...) when starting the sign in flow.
+        // RC_SIGN_IN is the request code passed into startActivityForResult(...) when starting the sign in flow.
         if (requestCode == RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
             // Successfully signed in
             if (resultCode == ResultCodes.OK) {
-                /** TODO: loads data from database*/
+                loadData();
                 return;
             } else {
                 // Sign in failed
@@ -138,6 +120,27 @@ public class GalleryActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         mFirebaseAdapter.cleanup();
+    }
+
+    private void loadData(){
+        mUserID = mFirebaseAuth.getCurrentUser().getUid();
+        mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID);
+
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<GeoDiary, GeoDiaryViewHolder>(
+                GeoDiary.class,
+                R.layout.item_gallery,
+                GeoDiaryViewHolder.class,
+                mDatabaseReference) {
+            @Override
+            protected void populateViewHolder(GeoDiaryViewHolder viewHolder, GeoDiary GeoDiary, int position) {
+                viewHolder.setPhoto(GeoDiary.getPhotoUrl());
+                // formats long timestamp to readable date string
+                long date = GeoDiary.getDate()*1000L;
+                String dateString = DateUtils.formatDateTime(getApplicationContext(), date, DateUtils.FORMAT_SHOW_YEAR);
+                viewHolder.setDate(dateString);
+            }
+        };
+        mGalleryRecyclerView.setAdapter(mFirebaseAdapter);
     }
 
     private void showSnackbar(@StringRes int errorMessageRes) {
