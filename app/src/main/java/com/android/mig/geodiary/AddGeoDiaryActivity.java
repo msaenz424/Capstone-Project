@@ -24,9 +24,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.android.mig.geodiary.models.GeoDiary;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -50,7 +50,7 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
 
     EditText mTitleEditText, mBodyEditText;
     ImageView mThumbnailImageView;
-    FloatingActionButton mFabPlus, mFabSubmit, mFabTakePhoto;
+    FloatingActionButton mFabPlus, mFabInsertQuote, mFabTakePhoto;
     Animation mScaleUpAnimation, mScaleDownAnimation,
             mFabClockwiseAnimation, mFabCounterClockwiseAnimation;
     Uri mPhotoPath;
@@ -73,7 +73,7 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
         mBodyEditText = (EditText) findViewById(R.id.body_edit_text);
         mThumbnailImageView = (ImageView) findViewById(R.id.thumbnail_image_view);
         mFabPlus = (FloatingActionButton) findViewById(R.id.fab_plus);
-        mFabSubmit = (FloatingActionButton) findViewById(R.id.fab_submit);
+        mFabInsertQuote = (FloatingActionButton) findViewById(R.id.fab_insert_quote);
         mFabTakePhoto = (FloatingActionButton) findViewById(R.id.fab_take_photo);
 
         mScaleUpAnimation = AnimationUtils.loadAnimation(this, R.anim.fab_scale_up);
@@ -208,8 +208,8 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
     private void enableButtons() {
         mFabTakePhoto.startAnimation(mScaleUpAnimation);
         mFabTakePhoto.setClickable(true);
-        mFabSubmit.startAnimation(mScaleUpAnimation);
-        mFabSubmit.setClickable(true);
+        mFabInsertQuote.startAnimation(mScaleUpAnimation);
+        mFabInsertQuote.setClickable(true);
         mFabPlus.startAnimation(mFabClockwiseAnimation);
         isOpen = true;
         mFabTakePhoto.setOnClickListener(new View.OnClickListener() {
@@ -219,10 +219,11 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
             }
         });
 
-        mFabSubmit.setOnClickListener(new View.OnClickListener() {
+        mFabInsertQuote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(AddGeoDiaryActivity.this, QuotesActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -231,7 +232,7 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
      * Hides fab buttons with animation
      */
     private void disableButtons() {
-        mFabSubmit.startAnimation(mScaleDownAnimation);
+        mFabInsertQuote.startAnimation(mScaleDownAnimation);
         mFabTakePhoto.startAnimation(mScaleDownAnimation);
         mFabPlus.startAnimation(mFabCounterClockwiseAnimation);
         isOpen = false;

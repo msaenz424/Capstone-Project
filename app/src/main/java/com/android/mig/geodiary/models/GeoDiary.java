@@ -1,4 +1,4 @@
-package com.android.mig.geodiary;
+package com.android.mig.geodiary.models;
 
 public class GeoDiary {
     private final static int ONE_SECOND_IN_MILLISECONDS = 1000;

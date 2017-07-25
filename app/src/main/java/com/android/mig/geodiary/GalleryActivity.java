@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.View;
 
 import com.android.mig.geodiary.adapters.GeoDiaryViewHolder;
+import com.android.mig.geodiary.models.GeoDiary;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
