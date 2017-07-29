@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -84,6 +85,26 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
         mFabClockwiseAnimation = AnimationUtils.loadAnimation(this, R.anim.fab_rotate_clockwise);
         mFabCounterClockwiseAnimation = AnimationUtils.loadAnimation(this, R.anim.fab_rotate_counterclockwise);
 
+        mTitleEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                // if edit text has focus and small fab buttons are open
+                if (hasFocus && isOpen){
+                    disableButtons();
+                }
+            }
+        });
+
+        mBodyEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                // if edit text has focus and small fab buttons are open
+                if (hasFocus && isOpen){
+                    disableButtons();
+                }
+            }
+        });
+
         mFabPlus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -145,6 +166,7 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_submit) {
+            disableButtons();
             uploadGeoDiary();
         }
         return super.onOptionsItemSelected(item);
