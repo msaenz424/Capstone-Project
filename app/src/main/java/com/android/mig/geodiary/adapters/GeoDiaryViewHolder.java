@@ -9,7 +9,7 @@ import com.android.mig.geodiary.R;
 import com.bumptech.glide.Glide;
 
 
-public class GeoDiaryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class GeoDiaryViewHolder extends RecyclerView.ViewHolder {
     private final ImageView mPhoto;
     private final TextView mDate;
 
@@ -17,6 +17,7 @@ public class GeoDiaryViewHolder extends RecyclerView.ViewHolder implements View.
         super(itemView);
         mPhoto = (ImageView) itemView.findViewById(R.id.photo_image_view);
         mDate = (TextView) itemView.findViewById(R.id.date_text_view);
+        //itemView.setOnClickListener();
     }
 
     public void setDate(String date){
@@ -27,10 +28,5 @@ public class GeoDiaryViewHolder extends RecyclerView.ViewHolder implements View.
         Glide.with(mPhoto.getContext())
                 .load(photoUrl)
                 .into(mPhoto);
-    }
-
-    @Override
-    public void onClick(View view) {
-
     }
 }

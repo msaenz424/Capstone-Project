@@ -116,28 +116,46 @@ public class GalleryActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * stops listening for changes on database when activity is destroyed
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mFirebaseAdapter.cleanup();
     }
 
-    private void loadData(){
+    /**
+     * Loads all the data from database that belongs only to the current user
+     */
+    private void loadData() {
         mUserID = mFirebaseAuth.getCurrentUser().getUid();
         mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID + getResources().getString(R.string.node_overviews));
-
         mFirebaseAdapter = new FirebaseRecyclerAdapter<GeoDiary, GeoDiaryViewHolder>(
                 GeoDiary.class,
                 R.layout.item_gallery,
                 GeoDiaryViewHolder.class,
                 mDatabaseReference) {
             @Override
-            protected void populateViewHolder(GeoDiaryViewHolder viewHolder, GeoDiary GeoDiary, int position) {
-                viewHolder.setPhoto(GeoDiary.getPhotoUrl());
+            protected void populateViewHolder(GeoDiaryViewHolder viewHolder, GeoDiary geoDiary, final int position) {
+                viewHolder.setPhoto(geoDiary.getPhotoUrl());
                 // formats long timestamp to readable date string
-                long date = GeoDiary.getDate()*1000L;
+                long date = geoDiary.getDate() * 1000L;
                 String dateString = DateUtils.formatDateTime(getApplicationContext(), date, DateUtils.FORMAT_SHOW_YEAR);
                 viewHolder.setDate(dateString);
+
+                // activates the click listener to each item in the list
+                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // gets the child key (from database) of the selected item in the list
+                        // and pass it to the next activity
+                        String geoDiaryKey = mFirebaseAdapter.getRef(position).getKey();
+                        Intent intent = new Intent(GalleryActivity.this, GeoDiaryDetailsActivity.class);
+                        intent.putExtra(Intent.EXTRA_UID, geoDiaryKey);
+                        startActivity(intent);
+                    }
+                });
             }
         };
         mGalleryRecyclerView.setAdapter(mFirebaseAdapter);

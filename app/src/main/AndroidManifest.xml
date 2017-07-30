@@ -24,7 +24,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddGeoDiaryActivity" />
-        <activity android:name=".QuotesActivity"></activity>
+        <activity android:name=".QuotesActivity" />
+        <activity android:name=".GeoDiaryDetailsActivity"></activity>
     </application>
 
 </manifest>
