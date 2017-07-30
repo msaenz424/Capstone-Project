@@ -16,7 +16,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -60,7 +59,7 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
     String mUserID;
 
     private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mDatabaseReference;
+    private DatabaseReference mDatabaseReference, mDatabaseReferenceContent, mDatabaseReferenceLocation, mDatabaseReferenceOverview;
     private FirebaseStorage mFirebaseStorage;
     private StorageReference mStorageReference;
     private GoogleApiClient mGoogleApiClient;
@@ -118,7 +117,10 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
             }
         });
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID);
+        mDatabaseReference= mFirebaseDatabase.getReference().child("geodiaries/" + mUserID);
+        mDatabaseReferenceContent = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID + "/contents");
+        mDatabaseReferenceLocation = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID + "/locations");
+        mDatabaseReferenceOverview = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID + "/overviews");
         mFirebaseStorage = FirebaseStorage.getInstance();
         mStorageReference = mFirebaseStorage.getReference().child("geodiary_photos");
 
@@ -316,13 +318,22 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
                 // saves data to Firebase Database
-                GeoDiary geo = new GeoDiary(
+                GeoDiary geoContent = new GeoDiary(
                         mTitleEditText.getText().toString(),
-                        mBodyEditText.getText().toString(),
-                        downloadUrl.toString(),
-                        mLongitude,
-                        mLatitude);
-                mDatabaseReference.push().setValue(geo);
+                        mBodyEditText.getText().toString()
+                );
+                String geoDiaryPushID = mDatabaseReference.push().getKey();
+                mDatabaseReference.child(getResources().getString(R.string.node_contents) + geoDiaryPushID)
+                        .setValue(geoContent);
+
+                GeoDiary geoLocation = new GeoDiary(mLatitude, mLongitude);
+                mDatabaseReference.child(getResources().getString(R.string.node_locations) + geoDiaryPushID)
+                        .setValue(geoLocation);
+
+                GeoDiary geoOverview = new GeoDiary(downloadUrl.toString());
+                String locationsNode = getResources().getString(R.string.node_overviews) + geoDiaryPushID;
+                mDatabaseReference.child(locationsNode)
+                        .setValue(geoOverview);
             }
         });
         Snackbar mySnackbar = Snackbar.make(findViewById(R.id.add_geodiary_coordinator_layout),

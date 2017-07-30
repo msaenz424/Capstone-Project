@@ -11,4 +11,8 @@
     <!-- Firebase strings -->
     <string name="geodiary_node">geodiaries</string>
     <string name="action_submit">Submit</string>
+    <string name="node_contents">/contents/</string>
+    <string name="node_locations">/locations/</string>
+    <string name="node_overviews">/overviews/</string>
 </resources>
+

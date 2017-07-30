@@ -7,19 +7,25 @@ public class GeoDiary {
     private String mContent;
     private String mPhotoUrl;
     private long mDate;
-    private double mLongitude;
     private double mLatitude;
+    private double mLongitude;
 
     public GeoDiary() {
     }
 
-    public GeoDiary(String mTitle, String mContent, String mPhotoUrl, double mLongitude, double mLatitude) {
-        this.mTitle = mTitle;
-        this.mContent = mContent;
-        this.mPhotoUrl = mPhotoUrl;
+    public GeoDiary(String title, String content){
+        this.mTitle = title;
+        this.mContent = content;
+    }
+
+    public GeoDiary(double latitude, double longitude){
+        this.mLatitude = latitude;
+        this.mLongitude = longitude;
+    }
+
+    public GeoDiary(String photoUrl){
+        this.mPhotoUrl = photoUrl;
         this.mDate =  (System.currentTimeMillis() / ONE_SECOND_IN_MILLISECONDS);
-        this.mLongitude = mLongitude;
-        this.mLatitude = mLatitude;
     }
 
     public String getTitle() {
@@ -46,7 +52,10 @@ public class GeoDiary {
         this.mPhotoUrl = photoUrl;
     }
 
-    public long getDate() {
+    public Long getDate() {
+        if (mDate == 0){
+            return null;
+        }
         return mDate;
     }
 
@@ -54,19 +63,25 @@ public class GeoDiary {
         this.mDate = date;
     }
 
-    public double getLongitude() {
-        return mLongitude;
-    }
-
     public void setLongitude(double longitude) {
         this.mLongitude = longitude;
     }
 
-    public double getmLatitude() {
+    public Double getLatitude() {
+        if (this.mLatitude == 0){
+            return null;
+        }
         return mLatitude;
     }
 
-    public void setmLatitude(double latitude) {
+    public Double getLongitude() {
+        if (this.mLongitude == 0){
+            return null;
+        }
+        return mLongitude;
+    }
+
+    public void setLatitude(double latitude) {
         this.mLatitude = latitude;
     }
 }

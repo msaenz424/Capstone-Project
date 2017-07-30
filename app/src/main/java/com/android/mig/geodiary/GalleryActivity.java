@@ -124,7 +124,7 @@ public class GalleryActivity extends AppCompatActivity {
 
     private void loadData(){
         mUserID = mFirebaseAuth.getCurrentUser().getUid();
-        mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID);
+        mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID + getResources().getString(R.string.node_overviews));
 
         mFirebaseAdapter = new FirebaseRecyclerAdapter<GeoDiary, GeoDiaryViewHolder>(
                 GeoDiary.class,
