@@ -151,8 +151,9 @@ public class GalleryActivity extends AppCompatActivity {
                         // gets the child key (from database) of the selected item in the list
                         // and pass it to the next activity
                         String geoDiaryKey = mFirebaseAdapter.getRef(position).getKey();
-                        Intent intent = new Intent(GalleryActivity.this, GeoDiaryDetailsActivity.class);
-                        intent.putExtra(Intent.EXTRA_UID, geoDiaryKey);
+                        Intent intent = new Intent(GalleryActivity.this, GeoDiaryDetailActivity.class);
+                        intent.putExtra(Intent.EXTRA_UID, mUserID);             // passes the user id
+                        intent.putExtra(Intent.EXTRA_KEY_EVENT, geoDiaryKey);   // passes selected diary key
                         startActivity(intent);
                     }
                 });

@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".GalleryActivity">
+        <activity android:name=".GalleryActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,7 +26,18 @@
         </activity>
         <activity android:name=".AddGeoDiaryActivity" />
         <activity android:name=".QuotesActivity" />
-        <activity android:name=".GeoDiaryDetailsActivity"></activity>
+        <activity
+            android:parentActivityName=".GalleryActivity"
+            android:name=".GeoDiaryDetailActivity"
+            android:label=""
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".GalleryActivity" />
+        </activity>
+        <service
+            android:name=".services.FetchAddressIntentService"
+            android:exported="false"/>
     </application>
 
 </manifest>
