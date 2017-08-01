@@ -32,45 +32,45 @@
 
     <ImageView
         android:id="@+id/thumbnail_image_view"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="@dimen/new_photo_width"
+        android:layout_height="@dimen/new_photo_height"
         android:layout_gravity="top|end"
-        android:padding="16dp"
-        android:rotation="20"
+        android:padding="@dimen/new_photo_padding"
+        android:rotation="@integer/new_photo_rotation"
         android:alpha="0.5"/>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_insert_quote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="84dp"
-        android:layout_marginEnd="24dp"
-        android:visibility="invisible"
-        app:fabSize="mini"
-        android:src="@drawable/ic_action_insert_quote"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_take_photo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="132dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="@dimen/fab_photo_bottom_margin"
+        android:layout_marginEnd="@dimen/fab_photo_end_margin"
         android:visibility="invisible"
         app:fabSize="mini"
         app:srcCompat="@drawable/ic_action_add_photo" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_insert_quote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="@dimen/fab_quote_bottom_margin"
+        android:layout_marginEnd="@dimen/fab_quote_end_margin"
+        android:visibility="invisible"
+        app:fabSize="mini"
+        app:srcCompat="@drawable/ic_action_insert_quote" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_plus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="@dimen/fab_button_standard_margin"
+        android:layout_marginEnd="@dimen/fab_button_standard_margin"
         app:fabSize="normal"
-        android:elevation="6dp"
-        android:translationZ="6dp"
+        android:elevation="@dimen/fab_button_elevation"
+        android:translationZ="@dimen/fab_button_elevation"
         app:srcCompat="@drawable/ic_action_plus" />
 
 </android.support.design.widget.CoordinatorLayout>
