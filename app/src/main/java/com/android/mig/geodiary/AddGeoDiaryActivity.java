@@ -167,7 +167,7 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_submit) {
+        if (item.getItemId() == R.id.action_save) {
             disableButtons();
             uploadGeoDiary();
         }
@@ -234,9 +234,15 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
      */
     private void enableButtons() {
         mFabTakePhoto.startAnimation(mScaleUpAnimation);
+        mFabTakePhoto.setVisibility(View.VISIBLE);
         mFabTakePhoto.setClickable(true);
+        mFabTakePhoto.setFocusable(true);
+
         mFabInsertQuote.startAnimation(mScaleUpAnimation);
+        mFabInsertQuote.setVisibility(View.VISIBLE);
         mFabInsertQuote.setClickable(true);
+        mFabInsertQuote.setFocusable(true);
+
         mFabPlus.startAnimation(mFabClockwiseAnimation);
         isOpen = true;
         mFabTakePhoto.setOnClickListener(new View.OnClickListener() {
@@ -253,6 +259,13 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
                 startActivity(intent);
             }
         });
+
+        mFabPlus.setNextFocusForwardId(R.id.fab_insert_quote);
+        mFabPlus.setNextFocusRightId(R.id.action_save);
+        mFabPlus.setNextFocusUpId(R.id.fab_insert_quote);
+        mFabInsertQuote.setNextFocusDownId(R.id.fab_plus);
+        mFabInsertQuote.setNextFocusUpId(R.id.fab_take_photo);
+        mFabTakePhoto.setNextFocusDownId(R.id.fab_insert_quote);
     }
 
     /**
@@ -262,6 +275,9 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
         mFabInsertQuote.startAnimation(mScaleDownAnimation);
         mFabTakePhoto.startAnimation(mScaleDownAnimation);
         mFabPlus.startAnimation(mFabCounterClockwiseAnimation);
+        // setting these views to invisible, prevents the d-pad to do actions on them
+        mFabInsertQuote.setVisibility(View.INVISIBLE);
+        mFabTakePhoto.setVisibility(View.INVISIBLE);
         isOpen = false;
     }
 

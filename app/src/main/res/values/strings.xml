@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">GeoDiary</string>
+    <string name="new_geodiary">New Diary</string>
+    <string name="quotes">Quotes</string>
 
     <string name="sign_in_cancelled">Cancelled</string>
     <string name="no_internet_connection">No internet connection</string>
@@ -10,9 +12,19 @@
 
     <!-- Firebase strings -->
     <string name="geodiary_node">geodiaries</string>
-    <string name="action_submit">Submit</string>
+    <string name="action_save">Save diary</string>
     <string name="node_contents">/contents/</string>
     <string name="node_locations">/locations/</string>
     <string name="node_overviews">/overviews/</string>
+
+    <!-- Content description -->
+    <string name="enter_title">Enter your diary\'s title</string>
+    <string name="compose_diary">Compose your diary</string>
+    <string name="more_options">More options</string>
+    <string name="insert_a_quote">Insert a quote</string>
+    <string name="take_photo">Take a photo</string>
+    <string name="add_diary">Add a diary</string>
+    <string name="copy_quote">Copy quote</string>
+
 </resources>
 

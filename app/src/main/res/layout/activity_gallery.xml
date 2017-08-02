@@ -21,6 +21,8 @@
         android:layout_marginBottom="@dimen/fab_button_standard_margin"
         android:elevation="@dimen/fab_button_elevation"
         android:translationZ="@dimen/fab_button_elevation"
+        android:contentDescription="@string/add_diary"
+        android:focusable="true"
         app:srcCompat="@drawable/ic_action_plus"
         app:fabSize="normal" />
 

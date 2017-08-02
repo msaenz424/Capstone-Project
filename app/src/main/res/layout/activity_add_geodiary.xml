@@ -18,7 +18,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             android:inputType="text"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:contentDescription="@string/enter_title"
+            android:focusable="true"/>
 
         <EditText
             android:id="@+id/body_edit_text"
@@ -26,7 +28,9 @@
             android:layout_height="match_parent"
             android:gravity="top|start"
             android:inputType="textMultiLine"
-            android:scrollbars="vertical"/>
+            android:scrollbars="vertical"
+            android:contentDescription="@string/compose_diary"
+            android:focusable="true"/>
 
     </LinearLayout>
 
@@ -47,6 +51,7 @@
         android:layout_marginBottom="@dimen/fab_photo_bottom_margin"
         android:layout_marginEnd="@dimen/fab_photo_end_margin"
         android:visibility="invisible"
+        android:contentDescription="@string/take_photo"
         app:fabSize="mini"
         app:srcCompat="@drawable/ic_action_add_photo" />
 
@@ -58,6 +63,7 @@
         android:layout_marginBottom="@dimen/fab_quote_bottom_margin"
         android:layout_marginEnd="@dimen/fab_quote_end_margin"
         android:visibility="invisible"
+        android:contentDescription="@string/insert_a_quote"
         app:fabSize="mini"
         app:srcCompat="@drawable/ic_action_insert_quote" />
 
@@ -68,9 +74,11 @@
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="@dimen/fab_button_standard_margin"
         android:layout_marginEnd="@dimen/fab_button_standard_margin"
-        app:fabSize="normal"
         android:elevation="@dimen/fab_button_elevation"
         android:translationZ="@dimen/fab_button_elevation"
+        android:contentDescription="@string/more_options"
+        android:focusable="true"
+        app:fabSize="normal"
         app:srcCompat="@drawable/ic_action_plus" />
 
 </android.support.design.widget.CoordinatorLayout>

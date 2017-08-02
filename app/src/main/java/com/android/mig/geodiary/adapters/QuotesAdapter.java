@@ -54,7 +54,8 @@ public class QuotesAdapter extends RecyclerView.Adapter<QuotesAdapter.QuotesAdap
             super(itemView);
             mTextViewQuote = (TextView) itemView.findViewById(R.id.item_quote_text_view);
             mImageViewCopy = (ImageView) itemView.findViewById(R.id.copy_image_view);
-            itemView.setOnClickListener(this);
+            mImageViewCopy.setOnClickListener(this);
+            mImageViewCopy.setFocusable(true);
         }
 
         @Override

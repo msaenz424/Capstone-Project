@@ -2,9 +2,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_submit"
+        android:id="@+id/action_save"
         android:icon="@drawable/ic_action_submit"
         android:orderInCategory="100"
-        android:title="@string/action_submit"
+        android:title="@string/action_save"
         app:showAsAction="always" />
 </menu>

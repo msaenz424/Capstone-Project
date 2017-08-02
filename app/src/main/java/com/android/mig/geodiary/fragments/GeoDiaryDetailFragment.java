@@ -106,6 +106,7 @@ public class GeoDiaryDetailFragment extends Fragment {
                 if (geoDiary != null) {
                     mTitleCollapsingLayout.setTitle(geoDiary.getTitle());
                     mContentTextView.setText(geoDiary.getContent());
+                    mContentTextView.setContentDescription(geoDiary.getTitle() + "\n" + geoDiary.getContent());
                 }
             }
 
