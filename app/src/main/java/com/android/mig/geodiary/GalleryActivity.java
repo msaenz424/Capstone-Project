@@ -1,6 +1,7 @@
 package com.android.mig.geodiary;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
 import android.support.design.widget.FloatingActionButton;
@@ -22,6 +23,7 @@ import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.ResultCodes;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -36,8 +38,7 @@ public class GalleryActivity extends AppCompatActivity {
     private FloatingActionButton mFabAdd;
 
     private FirebaseAuth mFirebaseAuth;
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mDatabaseReference;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
     private FirebaseRecyclerAdapter mFirebaseAdapter;
 
     String mUserID;
@@ -54,22 +55,28 @@ public class GalleryActivity extends AppCompatActivity {
         mGalleryRecyclerView.hasFixedSize();
 
         mFirebaseAuth = FirebaseAuth.getInstance();
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        if (mFirebaseAuth.getCurrentUser() != null) {
-            // already signed in
-            loadData();
-        } else {
-            // not signed in
-            startActivityForResult(
-                    AuthUI.getInstance()
-                            .createSignInIntentBuilder()
-                            .setIsSmartLockEnabled(!BuildConfig.DEBUG)  // disables it for debug
-                            .setAvailableProviders(
-                                    Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
-                                            new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()))
-                            .build(),
-                    RC_SIGN_IN);
-        }
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // already signed in
+                    onSignedInInitialize(user.getUid());
+                    loadData();
+                } else {
+                    // not signed in
+                    startActivityForResult(
+                            AuthUI.getInstance()
+                                    .createSignInIntentBuilder()
+                                    .setIsSmartLockEnabled(!BuildConfig.DEBUG)  // disables it for debug
+                                    .setAvailableProviders(
+                                            Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
+                                                    new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()))
+                                    .build(),
+                            RC_SIGN_IN);
+                }
+            }
+        };
 
         // opens activity to add a new GeoDiary
         mFabAdd.setOnClickListener(new View.OnClickListener() {
@@ -80,6 +87,20 @@ public class GalleryActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mAuthStateListener != null) {
+            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
+        }
     }
 
     @Override
@@ -119,10 +140,15 @@ public class GalleryActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_geodairy_map){
-            Intent intent = new Intent(GalleryActivity.this, MapsActivity.class);
-            intent.putExtra(Intent.EXTRA_UID, mUserID);             // passes the user id
-            startActivity(intent);
+        switch (item.getItemId()){
+            case R.id.action_geodairy_map:
+                Intent intent = new Intent(GalleryActivity.this, MapsActivity.class);
+                intent.putExtra(Intent.EXTRA_UID, mUserID);             // passes the user id
+                startActivity(intent);
+                break;
+            case R.id.action_sign_out:
+                AuthUI.getInstance().signOut(this);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -137,11 +163,20 @@ public class GalleryActivity extends AppCompatActivity {
     }
 
     /**
+     * passes the user name from fire auth
+     *
+     * @param user user id
+     */
+    private void onSignedInInitialize(String user) {
+        mUserID = user;
+    }
+
+    /**
      * Loads all the data from database that belongs only to the current user
      */
     private void loadData() {
-        mUserID = mFirebaseAuth.getCurrentUser().getUid();
-        mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID + getResources().getString(R.string.node_overviews));
+        FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID + getResources().getString(R.string.node_overviews));
         mFirebaseAdapter = new FirebaseRecyclerAdapter<GeoDiary, GeoDiaryViewHolder>(
                 GeoDiary.class,
                 R.layout.item_gallery,
