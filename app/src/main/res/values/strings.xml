@@ -25,6 +25,7 @@
     <string name="take_photo">Take a photo</string>
     <string name="add_diary">Add a diary</string>
     <string name="copy_quote">Copy quote</string>
+    <string name="title_activity_maps">Map</string>
 
 </resources>
 

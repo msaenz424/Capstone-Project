@@ -11,6 +11,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.android.mig.geodiary.adapters.GeoDiaryViewHolder;
@@ -114,6 +115,16 @@ public class GalleryActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.gallery_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_geodairy_map){
+            Intent intent = new Intent(GalleryActivity.this, MapsActivity.class);
+            intent.putExtra(Intent.EXTRA_UID, mUserID);             // passes the user id
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
