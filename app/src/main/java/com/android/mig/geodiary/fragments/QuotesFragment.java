@@ -1,8 +1,11 @@
 package com.android.mig.geodiary.fragments;
 
+import android.appwidget.AppWidgetManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,8 +18,10 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.android.mig.geodiary.QuoteHandler;
+import com.android.mig.geodiary.QuoteWidget;
 import com.android.mig.geodiary.R;
 import com.android.mig.geodiary.adapters.QuotesAdapter;
+import com.android.mig.geodiary.utils.Constants;
 import com.android.mig.geodiary.utils.NetworkUtils;
 import com.android.mig.geodiary.utils.OpenQuotesJsonUtils;
 
@@ -56,6 +61,24 @@ public class QuotesFragment extends Fragment implements QuoteHandler {
         ClipData clip = ClipData.newPlainText(QUOTE_LABEL, quote);
         clipboard.setPrimaryClip(clip);
         Toast.makeText(getContext(), "Quote copied to clipboard" , Toast.LENGTH_SHORT).show();
+        saveQuoteToPreferences(quote);
+    }
+
+    private void saveQuoteToPreferences(String quote){
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(Constants.PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(Constants.PREFERENCE_QUOTE_KEY, quote).apply();
+        updateWidget(quote);
+    }
+
+    private void updateWidget(String quote){
+        Context context = getContext();
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, QuoteWidget.class));
+        if (appWidgetIds.length != 0) {
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.appwidget_quote_text_view);
+            QuoteWidget.updateAppWidget(context, appWidgetManager, appWidgetIds[0], quote);
+        }
     }
 
     public class FetchQuotesTask extends AsyncTask<Void, Void, ArrayList<String>> {

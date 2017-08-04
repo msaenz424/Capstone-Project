@@ -13,4 +13,7 @@ public final class Constants {
 
     public static final String RESULT_DATA_KEY = PACKAGE_NAME + ".RESULT_DATA_KEY";
 
+    public static final String PREFERENCE_FILE_KEY = "com.mig.android.mig.geodiary";
+    public static final String PREFERENCE_QUOTE_KEY = "QUOTE_KEY";
+
 }

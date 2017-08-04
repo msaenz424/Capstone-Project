@@ -37,4 +37,8 @@
     <dimen name="quote_text_size">16sp</dimen>
     <dimen name="divider_horizontal_margin">16dp</dimen>
 
+    <!-- Widget -->
+    <dimen name="widget_margin">8dp</dimen>
+    <dimen name="widget_text_size">18sp</dimen>
+
 </resources>

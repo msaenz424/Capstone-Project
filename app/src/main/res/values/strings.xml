@@ -26,6 +26,8 @@
     <string name="add_diary">Add a diary</string>
     <string name="copy_quote">Copy quote</string>
     <string name="title_activity_maps">Map</string>
+    <string name="appwidget_text">Quote</string>
+    <string name="add_widget">Add widget</string>
 
 </resources>
 

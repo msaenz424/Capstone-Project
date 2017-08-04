@@ -8,4 +8,6 @@
     <color name="item_date_text_color">#FFFFFF</color>
 
     <color name="black_transparency">#80000000</color>
+
+    <color name="widget_text_color">#FFFFFF</color>
 </resources>
