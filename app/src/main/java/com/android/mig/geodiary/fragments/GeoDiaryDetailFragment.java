@@ -69,7 +69,10 @@ public class GeoDiaryDetailFragment extends Fragment {
                 GeoDiary geoDiary = dataSnapshot.getValue(GeoDiary.class);
                 String dateString = null;
                 if (geoDiary != null) {
-                    Glide.with(getContext()).load(geoDiary.getPhotoUrl()).into(mPhotoImageView);
+                    String photoUrl = geoDiary.getPhotoUrl();
+                    if (photoUrl != null){
+                        Glide.with(getContext()).load(photoUrl).into(mPhotoImageView);
+                    }
                     long date = geoDiary.getDate() * 1000L;
                     dateString = DateUtils.formatDateTime(getContext(), date, DateUtils.FORMAT_SHOW_YEAR);
                 }

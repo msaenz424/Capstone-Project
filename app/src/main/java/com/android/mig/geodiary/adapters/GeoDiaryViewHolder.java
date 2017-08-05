@@ -24,8 +24,8 @@ public class GeoDiaryViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setPhoto(String photoUrl){
-        Glide.with(mPhoto.getContext())
-                .load(photoUrl)
-                .into(mPhoto);
+        if (photoUrl != null){
+            Glide.with(mPhoto.getContext()).load(photoUrl).into(mPhoto);
+        }
     }
 }

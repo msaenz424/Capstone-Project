@@ -15,7 +15,8 @@
             android:layout_height="@dimen/photo_preview_height"
             android:background="@color/photo_placeholder"
             android:scaleType="centerCrop"
-            android:adjustViewBounds="true"/>
+            android:adjustViewBounds="true"
+            android:src="@drawable/acp1981"/>
 
         <TextView
             android:id="@+id/date_text_view"
