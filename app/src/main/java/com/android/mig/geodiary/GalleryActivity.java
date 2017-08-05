@@ -14,6 +14,7 @@ import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.android.mig.geodiary.adapters.GeoDiaryViewHolder;
 import com.android.mig.geodiary.models.GeoDiary;
@@ -24,8 +25,11 @@ import com.firebase.ui.auth.ResultCodes;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
 
@@ -177,6 +181,22 @@ public class GalleryActivity extends AppCompatActivity {
     private void loadData() {
         FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID + getResources().getString(R.string.node_overviews));
+        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // displays a message if nothing was retrieved from database
+                TextView mNoItemsTextView = (TextView) findViewById(R.id.no_items_text_view);
+                if (!dataSnapshot.hasChildren()){
+                    mNoItemsTextView.setVisibility(View.VISIBLE);
+                }else{
+                    mNoItemsTextView.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) { }
+        });
+
         mFirebaseAdapter = new FirebaseRecyclerAdapter<GeoDiary, GeoDiaryViewHolder>(
                 GeoDiary.class,
                 R.layout.item_gallery,

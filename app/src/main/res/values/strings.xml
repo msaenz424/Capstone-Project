@@ -28,6 +28,7 @@
     <string name="title_activity_maps">Map</string>
     <string name="appwidget_text">Quote</string>
     <string name="add_widget">Add widget</string>
+    <string name="no_item_text">There are no items in your gallery yet. Click on the button to add a new diary.</string>
 
 </resources>
 

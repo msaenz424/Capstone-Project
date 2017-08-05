@@ -17,7 +17,6 @@ public class GeoDiaryViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mPhoto = (ImageView) itemView.findViewById(R.id.photo_image_view);
         mDate = (TextView) itemView.findViewById(R.id.date_text_view);
-        //itemView.setOnClickListener();
     }
 
     public void setDate(String date){
