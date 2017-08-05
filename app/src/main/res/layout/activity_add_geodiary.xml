@@ -19,8 +19,8 @@
             android:layout_gravity="top"
             android:inputType="text"
             android:maxLines="1"
-            android:contentDescription="@string/enter_title"
-            android:focusable="true"/>
+            android:hint="@string/enter_title"
+            android:focusable="true" />
 
         <EditText
             android:id="@+id/body_edit_text"
@@ -29,7 +29,7 @@
             android:gravity="top|start"
             android:inputType="textMultiLine"
             android:scrollbars="vertical"
-            android:contentDescription="@string/compose_diary"
+            android:hint="@string/compose_diary"
             android:focusable="true"/>
 
     </LinearLayout>
