@@ -56,7 +56,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/det_cardview_margin"
             app:cardElevation="@dimen/det_cardview_elevation"
-            app:contentPadding="@dimen/det_cardview_padding">
+            app:contentPadding="@dimen/det_cardview_padding"
+            app:cardBackgroundColor="@color/content_background">
 
             <LinearLayout
                 android:layout_width="match_parent"
