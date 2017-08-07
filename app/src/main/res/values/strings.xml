@@ -5,13 +5,14 @@
 
     <string name="sign_in_cancelled">Cancelled</string>
     <string name="no_internet_connection">No internet connection</string>
-    <string name="unknown_error">Unknown error occurred, try again</string>
+    <string name="unknown_error">An error has occurred, please try again</string>
     <string name="action_geodiary_map">Map</string>
     <string name="action_sign_out">Sign out</string>
     <string name="geodiary_saved_message">GeoDiary successfully saved!</string>
     <string name="no_item_text">There are no items in your gallery yet. Click on the button to add a new diary.</string>
     <string name="download_uri_error">An unknown error occurred. Please try again.</string>
-    <string name="need_title_content_message">You need to enter title and content</string>
+    <string name="need_title_content_message">Please enter title and content</string>
+    <string name="sending_message">Saving diary...</string>
 
     <!-- Firebase strings -->
     <string name="geodiary_node">geodiaries</string>

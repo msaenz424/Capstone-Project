@@ -15,13 +15,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.mig.geodiary.adapters.GeoDiaryViewHolder;
 import com.android.mig.geodiary.models.GeoDiary;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
-import com.firebase.ui.auth.ResultCodes;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,13 +39,10 @@ public class GalleryActivity extends AppCompatActivity {
 
     private View mRootView;
     private RecyclerView mGalleryRecyclerView;
-    private FloatingActionButton mFabAdd;
 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private FirebaseRecyclerAdapter mFirebaseAdapter;
-
-    String mUserID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +50,7 @@ public class GalleryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_gallery);
 
         mRootView =  findViewById(R.id.login_root);
-        mFabAdd = (FloatingActionButton) findViewById(R.id.fab_add);
+        FloatingActionButton mFabAdd = (FloatingActionButton) findViewById(R.id.fab_add);
         mGalleryRecyclerView = (RecyclerView) findViewById(R.id.gallery_recycler_view);
         mGalleryRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         mGalleryRecyclerView.hasFixedSize();
@@ -65,8 +62,7 @@ public class GalleryActivity extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // already signed in
-                    onSignedInInitialize(user.getUid());
-                    loadData();
+                    loadData(user.getUid());
                 } else {
                     // not signed in
                     startActivityForResult(
@@ -87,7 +83,6 @@ public class GalleryActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(GalleryActivity.this, AddGeoDiaryActivity.class);
-                intent.putExtra(Intent.EXTRA_UID, mUserID);
                 startActivity(intent);
             }
         });
@@ -114,24 +109,16 @@ public class GalleryActivity extends AppCompatActivity {
         if (requestCode == RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
-            // Successfully signed in
-            if (resultCode == ResultCodes.OK) {
-                loadData();
-                return;
-            } else {
+            if (resultCode == RESULT_CANCELED) {
                 // Sign in failed
-                if (response == null) {
-                    // User pressed back button
-                    return;
+                if (response != null) {
+                    if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
+                        Toast.makeText(this, getResources().getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, getResources().getString(R.string.unknown_error), Toast.LENGTH_SHORT).show();
+                    }
                 }
-
-                if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
-                    showSnackbar(R.string.no_internet_connection);
-                    return;
-                } else {
-                    showSnackbar(R.string.unknown_error);
-                    return;
-                }
+                finish();
             }
         }
     }
@@ -147,7 +134,6 @@ public class GalleryActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.action_geodairy_map:
                 Intent intent = new Intent(GalleryActivity.this, MapsActivity.class);
-                intent.putExtra(Intent.EXTRA_UID, mUserID);             // passes the user id
                 startActivity(intent);
                 break;
             case R.id.action_sign_out:
@@ -163,24 +149,18 @@ public class GalleryActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mFirebaseAdapter.cleanup();
-    }
+        if (mFirebaseAdapter != null){
+            mFirebaseAdapter.cleanup();
+        }
 
-    /**
-     * passes the user name from fire auth
-     *
-     * @param user user id
-     */
-    private void onSignedInInitialize(String user) {
-        mUserID = user;
     }
 
     /**
      * Loads all the data from database that belongs only to the current user
      */
-    private void loadData() {
+    private void loadData(String userId) {
         FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID + getResources().getString(R.string.node_overviews));
+        DatabaseReference mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries/" + userId + getResources().getString(R.string.node_overviews));
         mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -218,7 +198,6 @@ public class GalleryActivity extends AppCompatActivity {
                         // and pass it to the next activity
                         String geoDiaryKey = mFirebaseAdapter.getRef(position).getKey();
                         Intent intent = new Intent(GalleryActivity.this, GeoDiaryDetailActivity.class);
-                        intent.putExtra(Intent.EXTRA_UID, mUserID);             // passes the user id
                         intent.putExtra(Intent.EXTRA_KEY_EVENT, geoDiaryKey);   // passes selected diary key
                         startActivity(intent);
                     }

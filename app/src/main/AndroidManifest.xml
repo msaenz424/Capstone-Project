@@ -35,7 +35,8 @@
         <activity
             android:name=".AddGeoDiaryActivity"
             android:label="@string/new_geodiary"
-            android:parentActivityName=".GalleryActivity"/>
+            android:parentActivityName=".GalleryActivity"
+            android:launchMode="singleTop"/>
         <activity
             android:name=".QuotesActivity"
             android:label="@string/quotes"

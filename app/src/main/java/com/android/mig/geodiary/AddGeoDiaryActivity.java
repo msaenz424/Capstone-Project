@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -33,6 +34,8 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -59,7 +62,6 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
     Uri mPhotoPath;
     boolean isOpen = false;
     double mLatitude, mLongitude;
-    String mUserID;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -67,8 +69,6 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_geodiary);
-
-        mUserID = getIntent().getStringExtra(Intent.EXTRA_UID);
 
         mRootLayout = (CoordinatorLayout) findViewById(R.id.add_geodiary_coordinator_layout);
         mTitleEditText = (EditText) findViewById(R.id.title_edit_text);
@@ -163,10 +163,13 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
             String title = mTitleEditText.getText().toString();
             String content = mBodyEditText.getText().toString();
             if (title.matches("") || content.matches("")){
-                Snackbar snackbar = Snackbar.make(mRootLayout, R.string.need_title_content_message, Snackbar.LENGTH_SHORT);
-                snackbar.show();
+                showSnackbar(R.string.need_title_content_message);
             } else {
-                disableButtons();
+                Toast.makeText(this, R.string.sending_message, Toast.LENGTH_SHORT).show();
+                if (isOpen){
+                    // if small FABs are being displayed then do scaling-down animation
+                    disableButtons();
+                }
                 preparePhotoAndSave();
             }
         }
@@ -323,6 +326,7 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
      */
     private void preparePhotoAndSave(){
         if (mPhotoPath != null){
+            // if user took a photo, then a photo path exists
             FirebaseStorage mFirebaseStorage = FirebaseStorage.getInstance();
             StorageReference mStorageReference = mFirebaseStorage.getReference().child("geodiary_photos");
 
@@ -338,12 +342,13 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
                     if (downloadUri != null){
                         saveGeoDiary(downloadUri.toString());
                     } else {
-                        Snackbar snackbar = Snackbar.make(mRootLayout, R.string.download_uri_error, Snackbar.LENGTH_LONG);
-                        snackbar.show();
+                        // something unexpected occurred, do nothing
+                        showSnackbar(R.string.download_uri_error);
                     }
                 }
             });
         } else {
+            // if user didn't take a photo, save a null value for photoUrl field in database
             saveGeoDiary(null);
         }
     }
@@ -354,28 +359,37 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
      * @param photoUrl the link to the photo or null if no photo was taken
      */
     public void saveGeoDiary(String photoUrl){
-        FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID);
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        if (user != null) {
+            String mUserID = user.getUid();
+            FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
+            DatabaseReference mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID);
 
-        // saves data to Firebase Database
-        GeoDiary geoContent = new GeoDiary(
-                mTitleEditText.getText().toString(),
-                mBodyEditText.getText().toString()
-        );
-        String geoDiaryPushID = mDatabaseReference.push().getKey();
-        mDatabaseReference.child(getResources().getString(R.string.node_contents) + geoDiaryPushID)
-                .setValue(geoContent);
+            // saves data to Firebase Database
+            GeoDiary geoContent = new GeoDiary(
+                    mTitleEditText.getText().toString(),
+                    mBodyEditText.getText().toString()
+            );
+            String geoDiaryPushID = mDatabaseReference.push().getKey();
+            mDatabaseReference.child(getResources().getString(R.string.node_contents) + geoDiaryPushID)
+                    .setValue(geoContent);
 
-        GeoDiary geoLocation = new GeoDiary(mLatitude, mLongitude);
-        mDatabaseReference.child(getResources().getString(R.string.node_locations) + geoDiaryPushID)
-                .setValue(geoLocation);
+            GeoDiary geoLocation = new GeoDiary(mLatitude, mLongitude);
+            mDatabaseReference.child(getResources().getString(R.string.node_locations) + geoDiaryPushID)
+                    .setValue(geoLocation);
 
-        GeoDiary geoOverview = new GeoDiary(photoUrl);
-        String locationsNode = getResources().getString(R.string.node_overviews) + geoDiaryPushID;
-        mDatabaseReference.child(locationsNode)
-                .setValue(geoOverview);
+            GeoDiary geoOverview = new GeoDiary(photoUrl);
+            String locationsNode = getResources().getString(R.string.node_overviews) + geoDiaryPushID;
+            mDatabaseReference.child(locationsNode)
+                    .setValue(geoOverview);
 
-        Snackbar snackbar = Snackbar.make(mRootLayout, R.string.geodiary_saved_message, Snackbar.LENGTH_SHORT);
-        snackbar.show();
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.geodiary_saved_message), Toast.LENGTH_LONG).show();
+            finish();
+        }
+    }
+
+    private void showSnackbar(@StringRes int message) {
+        Snackbar.make(mRootLayout, message, Snackbar.LENGTH_LONG).show();
     }
 }

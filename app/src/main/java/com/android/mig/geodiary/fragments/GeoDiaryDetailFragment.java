@@ -21,6 +21,8 @@ import com.android.mig.geodiary.R;
 import com.android.mig.geodiary.models.GeoDiary;
 import com.android.mig.geodiary.utils.Constants;
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,7 +45,10 @@ public class GeoDiaryDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_geodiary_detail, container, false);
 
-        final String mUserID = getActivity().getIntent().getStringExtra(Intent.EXTRA_UID);
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        String mUserID = user.getUid();
+
         final String mGeoDiaryKey = getActivity().getIntent().getStringExtra(Intent.EXTRA_KEY_EVENT);
 
         mTitleCollapsingLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.det_collapsing_layout);
@@ -57,7 +62,6 @@ public class GeoDiaryDetailFragment extends Fragment {
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-
         mDatabaseReferenceOverview = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID + getResources().getString(R.string.node_overviews)).child(mGeoDiaryKey);
         mDatabaseReferenceLocation = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID + getResources().getString(R.string.node_locations)).child(mGeoDiaryKey);
         mDatabaseReferenceContent = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID + getResources().getString(R.string.node_contents)).child(mGeoDiaryKey);
