@@ -1,10 +1,9 @@
 package com.android.mig.geodiary;
 
 import android.Manifest;
-import android.content.Context;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -28,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.mig.geodiary.models.GeoDiary;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -41,8 +41,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
-import java.io.ByteArrayOutputStream;
 
 public class AddGeoDiaryActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
@@ -59,7 +57,7 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
     FloatingActionButton mFabPlus, mFabInsertQuote, mFabTakePhoto;
     Animation mScaleUpAnimation, mScaleDownAnimation,
             mFabClockwiseAnimation, mFabCounterClockwiseAnimation;
-    Uri mPhotoPath;
+    Uri mPhotoPath, mTempContainerPath;
     boolean isOpen = false;
     double mLatitude, mLongitude;
 
@@ -143,11 +141,9 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // receives result code from camera intent launched previously
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            mThumbnailImageView.setImageBitmap(imageBitmap);
-            // gets the URI from the bitmap
-            mPhotoPath = getImageUri(getApplicationContext(), imageBitmap);
+            mPhotoPath = mTempContainerPath;
+            Glide.with(mThumbnailImageView.getContext()).load(mPhotoPath).into(mThumbnailImageView);
+            mTempContainerPath = null;
         }
     }
 
@@ -298,27 +294,17 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
     }
 
     /**
-     * Launches camera intent
+     * Launches camera intent with a temporary path
      */
     private void dispatchCameraIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.TITLE, "");
+            mTempContainerPath = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mTempContainerPath);
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
-    }
-
-    /**
-     * Gets the Uri from the photo that was taken
-     *
-     * @param context   activity context
-     * @param image     photo that was taken
-     * @return a Uri path to the image file
-     */
-    public Uri getImageUri(Context context, Bitmap image) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), image, "Title", null);
-        return Uri.parse(path);
     }
 
     /**

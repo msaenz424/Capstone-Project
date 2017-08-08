@@ -2,10 +2,8 @@ package com.android.mig.geodiary;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
 
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -37,7 +35,6 @@ public class GalleryActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 123;
 
-    private View mRootView;
     private RecyclerView mGalleryRecyclerView;
 
     private FirebaseAuth mFirebaseAuth;
@@ -49,7 +46,6 @@ public class GalleryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
-        mRootView =  findViewById(R.id.login_root);
         FloatingActionButton mFabAdd = (FloatingActionButton) findViewById(R.id.fab_add);
         mGalleryRecyclerView = (RecyclerView) findViewById(R.id.gallery_recycler_view);
         mGalleryRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -205,9 +201,5 @@ public class GalleryActivity extends AppCompatActivity {
             }
         };
         mGalleryRecyclerView.setAdapter(mFirebaseAdapter);
-    }
-
-    private void showSnackbar(@StringRes int errorMessageRes) {
-        Snackbar.make(mRootView, errorMessageRes, Snackbar.LENGTH_LONG).show();
     }
 }
