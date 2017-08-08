@@ -17,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -90,6 +91,16 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
                 }
             }
         });
+        mTitleEditText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                // if edit text has focus and small fab buttons are open
+                if (isOpen){
+                    disableButtons();
+                }
+                return true;
+            }
+        });
 
         mBodyEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -98,6 +109,15 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
                 if (hasFocus && isOpen){
                     disableButtons();
                 }
+            }
+        });
+        mBodyEditText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if (isOpen){
+                    disableButtons();
+                }
+                return true;
             }
         });
 
