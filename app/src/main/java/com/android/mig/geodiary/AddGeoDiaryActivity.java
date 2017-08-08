@@ -51,6 +51,9 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int MY_PERMISSIONS_REQUEST_USE_CAMERA = 10;        // code should be bigger than 0
     private static final int MY_PERMISSIONS_REQUEST_COARSE_LOCATION = 20;
+    static final String STATE_LATITUDE = "latitude";
+    static final String STATE_LONGITUDE = "longitude";
+    static final String STATE_PHOTO_PATH = "photoPath";
 
     CoordinatorLayout mRootLayout;
     EditText mTitleEditText, mBodyEditText;
@@ -147,6 +150,23 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
         super.onStart();
         if (mGoogleApiClient != null)
             mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mLatitude = savedInstanceState.getDouble(STATE_LATITUDE);
+        mLongitude = savedInstanceState.getDouble(STATE_LONGITUDE);
+        mPhotoPath = Uri.parse(savedInstanceState.getString(STATE_PHOTO_PATH));
+        Glide.with(mThumbnailImageView.getContext()).load(mPhotoPath).into(mThumbnailImageView);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putDouble(STATE_LATITUDE, mLatitude);
+        outState.putDouble(STATE_LONGITUDE, mLongitude);
+        outState.putString(STATE_PHOTO_PATH, String.valueOf(mPhotoPath));
+        super.onSaveInstanceState(outState);
     }
 
     @Override
