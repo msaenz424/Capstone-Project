@@ -3,6 +3,7 @@ package com.android.mig.geodiary;
 import android.Manifest;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
@@ -17,7 +18,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +44,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.List;
+
 public class AddGeoDiaryActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -51,9 +54,11 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int MY_PERMISSIONS_REQUEST_USE_CAMERA = 10;        // code should be bigger than 0
     private static final int MY_PERMISSIONS_REQUEST_COARSE_LOCATION = 20;
-    static final String STATE_LATITUDE = "latitude";
-    static final String STATE_LONGITUDE = "longitude";
-    static final String STATE_PHOTO_PATH = "photoPath";
+    private static final String STATE_LATITUDE = "latitude";
+    private static final String STATE_LONGITUDE = "longitude";
+    private static final String STATE_PHOTO_PATH = "photoPath";
+    private static final String STATE_TEMP_PHOTO_PATH = "tempPhotoPath";
+    private static final String STATE_STORAGE_REFERENCE = "storageReference";
 
     CoordinatorLayout mRootLayout;
     EditText mTitleEditText, mBodyEditText;
@@ -66,6 +71,8 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
     double mLatitude, mLongitude;
 
     private GoogleApiClient mGoogleApiClient;
+    FirebaseStorage mFirebaseStorage;
+    StorageReference mStorageReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,16 +101,6 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
                 }
             }
         });
-        mTitleEditText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                // if edit text has focus and small fab buttons are open
-                if (isOpen){
-                    disableButtons();
-                }
-                return true;
-            }
-        });
 
         mBodyEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -112,15 +109,6 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
                 if (hasFocus && isOpen){
                     disableButtons();
                 }
-            }
-        });
-        mBodyEditText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if (isOpen){
-                    disableButtons();
-                }
-                return true;
             }
         });
 
@@ -157,15 +145,33 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
         super.onRestoreInstanceState(savedInstanceState);
         mLatitude = savedInstanceState.getDouble(STATE_LATITUDE);
         mLongitude = savedInstanceState.getDouble(STATE_LONGITUDE);
-        mPhotoPath = Uri.parse(savedInstanceState.getString(STATE_PHOTO_PATH));
-        Glide.with(mThumbnailImageView.getContext()).load(mPhotoPath).into(mThumbnailImageView);
+        mTempContainerPath = Uri.parse(savedInstanceState.getString(STATE_TEMP_PHOTO_PATH));
+        String statePhotoPath = savedInstanceState.getString(STATE_PHOTO_PATH);
+        if (statePhotoPath != null){
+            mPhotoPath = Uri.parse(statePhotoPath);
+            Glide.with(mThumbnailImageView.getContext()).load(mPhotoPath).into(mThumbnailImageView);
+        }
+
+        // If there was an upload in progress, get its reference and create a new StorageReference
+        final String stringRef = savedInstanceState.getString(STATE_STORAGE_REFERENCE);
+        if (stringRef == null) {
+            return;
+        }
+        restoreStorageTask(stringRef);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putDouble(STATE_LATITUDE, mLatitude);
         outState.putDouble(STATE_LONGITUDE, mLongitude);
-        outState.putString(STATE_PHOTO_PATH, String.valueOf(mPhotoPath));
+        outState.putString(STATE_TEMP_PHOTO_PATH, String.valueOf(mTempContainerPath));
+        if (mPhotoPath != null){
+            outState.putString(STATE_PHOTO_PATH, String.valueOf(mPhotoPath));
+        }
+        // If there's an upload in progress, save the reference so you can query it later
+        if (mStorageReference != null) {
+            outState.putString(STATE_STORAGE_REFERENCE, mStorageReference.toString());
+        }
         super.onSaveInstanceState(outState);
     }
 
@@ -201,12 +207,14 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
             if (title.matches("") || content.matches("")){
                 showSnackbar(R.string.need_title_content_message);
             } else {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
                 Toast.makeText(this, R.string.sending_message, Toast.LENGTH_SHORT).show();
                 if (isOpen){
                     // if small FABs are being displayed then do scaling-down animation
                     disableButtons();
                 }
                 preparePhotoAndSave();
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
             }
         }
         return super.onOptionsItemSelected(item);
@@ -351,16 +359,14 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
      * Uploads the photo (if taken) to the storage and passes its link or null to saveGeoDiary
      */
     private void preparePhotoAndSave(){
+        // if user took a photo, then a photo path exists
         if (mPhotoPath != null){
-            // if user took a photo, then a photo path exists
-            FirebaseStorage mFirebaseStorage = FirebaseStorage.getInstance();
-            StorageReference mStorageReference = mFirebaseStorage.getReference().child("geodiary_photos");
-
+            mFirebaseStorage = FirebaseStorage.getInstance();
             // names the child as the last path segment
-            StorageReference photoRef = mStorageReference.child(mPhotoPath.getLastPathSegment());
+            mStorageReference = mFirebaseStorage.getReference().child("geodiary_photos").child(mPhotoPath.getLastPathSegment());
 
             // uploads file to Firebase Storage
-            photoRef.putFile(mPhotoPath).addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            mStorageReference.putFile(mPhotoPath).addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     // gets url of the photo from storage
@@ -387,16 +393,14 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
     public void saveGeoDiary(String photoUrl){
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
+        Log.d("USER: ", user.toString());
         if (user != null) {
             String mUserID = user.getUid();
             FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
             DatabaseReference mDatabaseReference = mFirebaseDatabase.getReference().child("geodiaries/" + mUserID);
 
             // saves data to Firebase Database
-            GeoDiary geoContent = new GeoDiary(
-                    mTitleEditText.getText().toString(),
-                    mBodyEditText.getText().toString()
-            );
+            GeoDiary geoContent = new GeoDiary(mTitleEditText.getText().toString(), mBodyEditText.getText().toString());
             String geoDiaryPushID = mDatabaseReference.push().getKey();
             mDatabaseReference.child(getResources().getString(R.string.node_contents) + geoDiaryPushID)
                     .setValue(geoContent);
@@ -412,6 +416,38 @@ public class AddGeoDiaryActivity extends AppCompatActivity implements
 
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.geodiary_saved_message), Toast.LENGTH_LONG).show();
             finish();
+        }
+    }
+
+    /**
+     * Gets triggered when there was STATE_STORAGE_REFERENCE exists.
+     * This is useful when user rotates the screen during a database transaction.
+     *
+     * @param stringRef the storage reference to the child node from Firebase Storage
+     */
+    public void restoreStorageTask(String stringRef){
+        mStorageReference = FirebaseStorage.getInstance().getReferenceFromUrl(stringRef);
+
+        // Find all UploadTasks under this StorageReference, in this case only one
+        List<UploadTask> tasks = mStorageReference.getActiveUploadTasks();
+        if (tasks.size() > 0) {
+            // Get the task monitoring the upload
+            UploadTask task = tasks.get(0);
+
+            // Add new listeners to the task using an Activity scope
+            task.addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // gets url of the photo from storage
+                    Uri downloadUri = taskSnapshot.getDownloadUrl();
+                    if (downloadUri != null){
+                        saveGeoDiary(downloadUri.toString());
+                    } else {
+                        // something unexpected occurred, do nothing
+                        showSnackbar(R.string.download_uri_error);
+                    }
+                }
+            });
         }
     }
 
