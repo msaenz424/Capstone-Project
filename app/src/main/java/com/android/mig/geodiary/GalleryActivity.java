@@ -1,5 +1,6 @@
 package com.android.mig.geodiary;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
@@ -12,6 +13,7 @@ import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -190,12 +192,20 @@ public class GalleryActivity extends AppCompatActivity {
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Bundle bundle = null;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                            ImageView sharedView = (ImageView) view.findViewById(R.id.photo_image_view);
+                            // takes care of the shared element transition
+                            bundle = ActivityOptions
+                                    .makeSceneTransitionAnimation(GalleryActivity.this, sharedView, sharedView.getTransitionName())
+                                    .toBundle();
+                        }
                         // gets the child key (from database) of the selected item in the list
                         // and pass it to the next activity
                         String geoDiaryKey = mFirebaseAdapter.getRef(position).getKey();
                         Intent intent = new Intent(GalleryActivity.this, GeoDiaryDetailActivity.class);
                         intent.putExtra(Intent.EXTRA_KEY_EVENT, geoDiaryKey);   // passes selected diary key
-                        startActivity(intent);
+                        startActivity(intent, bundle);
                     }
                 });
             }

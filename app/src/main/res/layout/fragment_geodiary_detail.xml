@@ -22,7 +22,8 @@
                 android:layout_height="wrap_content"
                 android:fitsSystemWindows="true"
                 android:scaleType="fitCenter"
-                app:layout_collapseMode="parallax" />
+                app:layout_collapseMode="parallax"
+                android:transitionName="@string/transition_photo_name"/>
 
             <View
                 android:layout_width="match_parent"

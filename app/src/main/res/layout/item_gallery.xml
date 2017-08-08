@@ -16,7 +16,8 @@
             android:background="@color/photo_placeholder"
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"
-            android:src="@drawable/acp1981"/>
+            android:src="@drawable/acp1981"
+            android:transitionName="@string/transition_photo_name"/>
 
         <TextView
             android:id="@+id/date_text_view"
