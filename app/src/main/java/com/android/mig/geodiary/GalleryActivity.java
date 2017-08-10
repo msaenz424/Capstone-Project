@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,7 +51,7 @@ public class GalleryActivity extends AppCompatActivity {
 
         FloatingActionButton mFabAdd = (FloatingActionButton) findViewById(R.id.fab_add);
         mGalleryRecyclerView = (RecyclerView) findViewById(R.id.gallery_recycler_view);
-        mGalleryRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        mGalleryRecyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns()));
         mGalleryRecyclerView.hasFixedSize();
 
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -211,5 +212,22 @@ public class GalleryActivity extends AppCompatActivity {
             }
         };
         mGalleryRecyclerView.setAdapter(mFirebaseAdapter);
+    }
+
+    /**
+     * Helps finding the appropriate number of columns for the recyclerview
+     * based on screen size and orientation
+     *
+     * @return proper number of columns to be used
+     */
+    private int numberOfColumns() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        // You can change this divider to adjust the size of the poster
+        int widthDivider = 400;
+        int width = displayMetrics.widthPixels;
+        int nColumns = width / widthDivider;
+        if (nColumns < 2) return 2;
+        return nColumns;
     }
 }
