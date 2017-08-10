@@ -14,6 +14,7 @@
     <string name="download_uri_error">An unknown error occurred. Please try again.</string>
     <string name="need_title_content_message">Please enter title and content</string>
     <string name="sending_message">Saving diary...</string>
+    <string name="quote_copied_message">Quote copied to clipboard</string>
     <string name="transition_photo_name">photo_transition</string>
 
     <!-- Firebase strings -->

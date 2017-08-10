@@ -60,7 +60,7 @@ public class QuotesFragment extends Fragment implements QuoteHandler {
         ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText(QUOTE_LABEL, quote);
         clipboard.setPrimaryClip(clip);
-        Toast.makeText(getContext(), "Quote copied to clipboard" , Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), getResources().getString(R.string.quote_copied_message), Toast.LENGTH_SHORT).show();
         saveQuoteToPreferences(quote);
     }
 
