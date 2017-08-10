@@ -49,6 +49,8 @@ public class GalleryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
+        getSupportActionBar().setTitle(getResources().getString(R.string.gallery_activity));
+
         FloatingActionButton mFabAdd = (FloatingActionButton) findViewById(R.id.fab_add);
         mGalleryRecyclerView = (RecyclerView) findViewById(R.id.gallery_recycler_view);
         mGalleryRecyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns()));
